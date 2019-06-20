@@ -38,7 +38,7 @@ def main():
 
 	lsh = LSHNeighbors()
 	t0 = time.time()
-	lsh.fit(X, hash="pcabinary")
+	lsh.fit(X)
 	t1 = time.time()
 	print("LSH Fit:", t1-t0)
 
