@@ -32,7 +32,7 @@ def main():
 	print("Vanilla NN Fit:", t1-t0)
 	# print(nn.kneighbors(np.zeros(d)+1)[0])
 	t0 = time.time()
-	nn_query = nn.kneighbors(query)[0]
+	nn_query = nn.kneighbors(query, n_neighbors=1)
 	t1 = time.time()
 	print("Vanilla NN Query:", t1-t0)
 
@@ -43,12 +43,12 @@ def main():
 	print("LSH Fit:", t1-t0)
 
 	t0 = time.time()
-	lsh_query = lsh.kneighbors(query)
+	lsh_query = lsh.kneighbors(query, n_neighbors=1)
 	t1 = time.time()
 	print("LSH Query:", t1-t0)
 
 	print("\nLSH Distance:", lsh_query[0][0][0])
-	print("True Best Distance:", nn_query[0][0])
-
+	print("True Best Distance:", nn_query[0][0][0])
+	print(min(lsh_query[0]))
 if __name__ == "__main__":
 	main()

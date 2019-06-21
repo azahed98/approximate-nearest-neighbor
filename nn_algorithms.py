@@ -46,15 +46,24 @@ class LSHNeighbors(NearestNeighbors):
         if len(X.shape) == 1:
           results = self.engine.neighbours(X)
           # dists = [elem[2] for elem in results]
+          if n_neighbors == None:
+            n_neighbors = len(results)
+          else:
+            n_neighbors = min(len(results), n_neighbors)
           dists = np.array([np.linalg.norm(X - elem[0]) for elem in results])
           indices = np.array([int(elem[1]) for elem in results])
           vectors = np.array([elem[0] for elem in results])
-          return (dists, indices, vectors)
+          return (dists[:n_neighbors], 
+                  indices[:n_neighbors], 
+                  vectors[:n_neighbors])
         elif len(X.shape) == 2:
           results = [self.engine.neighbours(x) for x in X]
-          dists = np.array([[np.linalg.norm(X - elem[0]) for elem in result] for result in results])
-          indices = np.array([[int(elem[1]) for elem in result] for result in results])
-          vectors = np.array([[elem[0] for elem in result] for result in results])
+          if n_neighbors == None:
+            n_neighbors = min([len(result) for result in results])
+
+          dists = np.array([[np.linalg.norm(X - result[i][0]) for i in range(min(len(result), n_neighbors))] for result in results])
+          indices = np.array([[int(result[i][1]) for i in range(min(len(result), n_neighbors))] for result in results])
+          vectors = np.array([[result[i][0] for i in range(min(len(result), n_neighbors))] for result in results])
           return (dists, indices, vectors)
         else:
           raise ValueError('X has rank higher than 2')
@@ -129,9 +138,9 @@ class DCINeighbors(NearestNeighbors):
         qbar = np.matmul(U.T, X)
         S = [None for _ in range(self.L)]
 
-        for i in range(self.n):
-          for l in range(self.L):
-            for j in range(self.m):
+        # for i in range(self.n):
+        #   for l in range(self.L):
+        #     for j in range(self.m):
               
 
 
@@ -155,7 +164,7 @@ class KeyValWrap:
     self.key = key
     self.val = val
 
-   def __lt__(self,other):
+    def __lt__(self,other):
         return (self.key<other.key)
 
     def __le__(self,other):
